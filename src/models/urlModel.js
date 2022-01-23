@@ -49,32 +49,22 @@ const getUserUrls = (data, cb) => {
   sqlConnection.executeQuery(sql, values, (err, result) => {
     cb(err, result);
   });
-  //   cb(null, { user: "test" });
 };
 
-const getMatchingHashes = (data, cb) => {
-  let values = [];
-  let sql = `SELECT COUNT(*) as count FROM urls where hashlink = ?`;
-  values.push(data.hash);
-  sqlConnection.executeQuery(sql, values, (err, result) => {
-    cb(err, result[0]);
+const getMatchingHashes = (data) => {
+  return new Promise((resolve, reject) => {
+    let values = [];
+    let sql = `SELECT COUNT(*) as count FROM urls where hashlink = ?`;
+    values.push(data.hash);
+    sqlConnection.executeQuery(sql, values, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result[0]);
+      }
+    });
   });
 };
-
-// const getMatchingHashes = (data) => {
-//   return new Promise((resolve, reject) => {
-//     let values = [];
-//     let sql = `SELECT COUNT(*) as count FROM urls where hashlink = ?`;
-//     values.push(data.hash);
-//     sqlConnection.executeQuery(sql, values, (err, result) => {
-//       if (err) {
-//         reject(err);
-//       } else {
-//         resolve(result[0]);
-//       }
-//     });
-//   });
-// };
 
 module.exports = {
   listUrls,

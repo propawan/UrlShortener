@@ -29,35 +29,27 @@ const getHash = async (req, res) => {
           }
         });
       } else {
-        // url hash
         let hashlink = getShortHash();
         data.hash = hashlink;
-        function getUniqueHash(newHash, callback) {
-          UrlModel.getMatchingHashes(newHash, (err7, hashes) => {
-            if (err7) {
-              return res.status(400).send("Hash Details Fetch error");
-            } else {
-              if (hashes.count == 0) {
-                callback(newHash);
-              } else {
-                console.log("hashDetails");
-                console.log(hashes);
-                hashlink = getShortHash();
-                newHash.hash = hashlink;
-                getUniqueHash(newHash);
-              }
-            }
-          });
+        let unique = false;
+        while (!unique) {
+          let result = await UrlModel.getMatchingHashes(data);
+          if (result.count == 0) {
+            unique = true;
+          }
         }
-        getUniqueHash(data, (newHash) => {
-          console.log(newHash);
-          UrlModel.urlAdd(newHash, (err1, urlAddDetail) => {
-            if (err1) {
-              return res.status(500).send("Internal server error");
-            } else {
-              return res.status(200).json({ success: true, newHash });
-            }
-          });
+        UrlModel.urlAdd(data, (err1, urlAddDetail) => {
+          if (err1) {
+            return res.status(500).send("Internal server error");
+          } else {
+            UrlModel.getHashForUrl(data, (err5, urlHashDetail1) => {
+              if (err5) {
+                return res.status(500).send("Internal server error");
+              } else {
+                return res.status(200).json({ success: true, urlHashDetail1 });
+              }
+            });
+          }
         });
       }
     }
@@ -75,21 +67,11 @@ const getUserUrls = (req, res) => {
 };
 
 const checkHashDetailsWorking = async (req, res) => {
-  // let hash = req.query.hash;
-  // let data = { hash };
-  // let result = await UrlModel.getMatchingHashes(data);
-  // console.log(result);
-  // return res.json(result);
-  return res.send("All ok");
+  let hash = req.query.hash;
+  let data = { hash };
+  let result = await UrlModel.getMatchingHashes(data);
+  console.log(result);
+  return res.json(result);
 };
-
-// Hash Details Inside Normal
-//   UrlModel.getHashDetails(data, (err, hashDetails) => {
-//     if (err) {
-//       return res.status(400).send("Hash Details Fetch error");
-//     } else {
-//       return res.status(200).json({ success: true, hashDetails });
-//     }
-//   });
 
 module.exports = { listUrls, getHash, getUserUrls, checkHashDetailsWorking };
