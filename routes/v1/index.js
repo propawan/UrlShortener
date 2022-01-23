@@ -6,6 +6,7 @@ const userController = require("../../src/controllers/userController");
 
 router.route("/allUrls").get(urlController.listUrls);
 router.route("/gethash").get(urlController.getHash);
+router.route("/hash").get(urlController.checkHashDetailsWorking);
 
 router.get(
   "/shortUrls",
