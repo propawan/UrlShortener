@@ -18,14 +18,14 @@ const getHash = async (req, res) => {
     if (err) {
       return res.status(500).send("Internal server error");
     } else {
-      console.log(result);
       if (result[0].count) {
-        console.log(result[0].count);
-        UrlModel.getHashForUrl(data, (err4, urlHashDetail) => {
-          if (err4) {
+        UrlModel.getHashForUrl(data, (err1, urlHashDetail) => {
+          if (err1) {
             return res.status(500).send("Internal server error");
           } else {
-            return res.status(200).json({ success: true, urlHashDetail });
+            const [{ hash }] = urlHashDetail;
+            let link = `https://lit.com/${hash}`;
+            return res.status(200).json({ success: true, shortLink: link });
           }
         });
       } else {
@@ -38,17 +38,12 @@ const getHash = async (req, res) => {
             unique = true;
           }
         }
-        UrlModel.urlAdd(data, (err1, urlAddDetail) => {
-          if (err1) {
+        UrlModel.urlAdd(data, (err2, urlAddDetail) => {
+          if (err2) {
             return res.status(500).send("Internal server error");
           } else {
-            UrlModel.getHashForUrl(data, (err5, urlHashDetail1) => {
-              if (err5) {
-                return res.status(500).send("Internal server error");
-              } else {
-                return res.status(200).json({ success: true, urlHashDetail1 });
-              }
-            });
+            let link = `https://lit.com/${data.hash}`;
+            return res.status(200).json({ success: true, shortLink: link });
           }
         });
       }
@@ -59,7 +54,11 @@ const getHash = async (req, res) => {
 const getUserUrls = (req, res) => {
   if (req.user) {
     UrlModel.getUserUrls(req.user, (err, result) => {
-      return res.status(200).send({ success: true, result });
+      if (err) {
+        return res.status(500).send("Internal server error");
+      } else {
+        return res.status(200).send({ success: true, result });
+      }
     });
   } else {
     return res.status(400).send("User not present");

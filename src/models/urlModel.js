@@ -41,8 +41,6 @@ const getHashForUrl = (data, cb) => {
 };
 
 const getUserUrls = (data, cb) => {
-  console.log("User data");
-  console.log(data);
   let values = [];
   let sql = `select * from urls where userId = ?`;
   values.push(data[0].UserId);
