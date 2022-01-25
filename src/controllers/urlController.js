@@ -65,12 +65,4 @@ const getUserUrls = (req, res) => {
   }
 };
 
-const checkHashDetailsWorking = async (req, res) => {
-  let hash = req.query.hash;
-  let data = { hash };
-  let result = await UrlModel.getMatchingHashes(data);
-  console.log(result);
-  return res.json(result);
-};
-
 module.exports = { listUrls, getHash, getUserUrls, checkHashDetailsWorking };
