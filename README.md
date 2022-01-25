@@ -1,5 +1,5 @@
 # UrlShortener
-URL shortener implemented in NodeJS, Express.
+URL shortener implemented with Express, MySQL, NodeJS.
 <br>
 Features are :
 - Get short url for any given url.
